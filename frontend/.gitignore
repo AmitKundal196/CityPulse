@@ -1,0 +1,21 @@
+# Frontend Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+dist-ssr/
+
+# Environment variables
+.env
+.env.*
+.env.local
+!.env.example
+
+# Logs
+*.log
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

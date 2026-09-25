@@ -1,0 +1,407 @@
+@import 'leaflet/dist/leaflet.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Leaflet popup & container styles */
+.leaflet-container {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  z-index: 10;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #111827 !important;
+  color: #F3F4F6 !important;
+  border: 1px solid #1F2937 !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #111827 !important;
+  border: 1px solid #1F2937 !important;
+}
+
+html.light .leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .leaflet-popup-tip {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+/* Dark mode map tile styling for standard OSM tiles (no API key required) */
+html.dark .leaflet-tile,
+:not(.light) .leaflet-tile {
+  filter: brightness(0.65) invert(1) contrast(2.8) hue-rotate(200deg) saturate(0.25) brightness(0.7);
+}
+
+html.light .leaflet-tile {
+  filter: none !important;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #0B0F19;
+    color: #F3F4F6;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Custom scrollbars for data tables and panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0D1322;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Focus styles for keyboard accessibility */
+:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
+
+/* Subtle transitions with accessibility respect */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ========================================================
+   LIGHT MODE OVERRIDES FOR CIVIC INTELLIGENCE PLATFORM
+   ======================================================== */
+html.light,
+html.light body {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+/* Surfaces */
+html.light .bg-\[\#0B0F19\] {
+  background-color: #F8FAFC !important;
+}
+
+html.light .bg-\[\#0D1322\] {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+html.light .bg-\[\#0D1322\]\/90,
+html.light .bg-\[\#0D1322\]\/80,
+html.light .bg-\[\#0D1322\]\/70,
+html.light .bg-\[\#0D1322\]\/60,
+html.light .bg-\[\#0D1322\]\/50 {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Light mode badge color harmony - pastel tints with crisp dark text */
+html.light .bg-emerald-950\/30,
+html.light .bg-emerald-950\/40 {
+  background-color: #ECFDF5 !important;
+  color: #065F46 !important;
+  border-color: #A7F3D0 !important;
+}
+
+html.light .bg-amber-950\/30,
+html.light .bg-amber-950\/40 {
+  background-color: #FFFBEB !important;
+  color: #92400E !important;
+  border-color: #FDE68A !important;
+}
+
+html.light .bg-orange-950\/30,
+html.light .bg-orange-950\/40 {
+  background-color: #FFF7ED !important;
+  color: #9A3412 !important;
+  border-color: #FED7AA !important;
+}
+
+html.light .bg-rose-950\/30,
+html.light .bg-rose-950\/40 {
+  background-color: #FFF1F2 !important;
+  color: #9F1239 !important;
+  border-color: #FECDD3 !important;
+}
+
+html.light .bg-purple-950\/30,
+html.light .bg-purple-950\/40 {
+  background-color: #FAF5FF !important;
+  color: #6B21A8 !important;
+  border-color: #E9D5FF !important;
+}
+
+html.light .bg-red-950\/40,
+html.light .bg-red-950\/50 {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+
+/* Light mode high-contrast AQI and status text */
+html.light .text-amber-300 {
+  color: #D97706 !important;
+}
+
+html.light .text-orange-300 {
+  color: #EA580C !important;
+}
+
+html.light .text-emerald-400 {
+  color: #059669 !important;
+}
+
+html.light .text-rose-400 {
+  color: #E11D48 !important;
+}
+
+html.light .text-purple-300,
+html.light .text-purple-400 {
+  color: #7C3AED !important;
+}
+
+html.light .text-red-400 {
+  color: #DC2626 !important;
+}
+
+html.light .bg-\[\#111827\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light .bg-\[\#131B2E\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light .bg-\[\#161F33\] {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+html.light .bg-\[\#080C14\] {
+  background-color: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+
+html.light .bg-\[\#090D17\] {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Gray variations */
+html.light .bg-gray-900,
+html.light .bg-gray-900\/40,
+html.light .bg-gray-900\/60,
+html.light .bg-gray-900\/80,
+html.light .bg-gray-900\/90 {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+html.light .bg-gray-800,
+html.light .bg-gray-800\/60,
+html.light .bg-gray-800\/80 {
+  background-color: #E2E8F0 !important;
+  border-color: #CBD5E1 !important;
+}
+
+/* Typography & Contrast */
+html.light .text-white {
+  color: #0F172A !important;
+}
+
+html.light .text-gray-100 {
+  color: #1E293B !important;
+}
+
+html.light .text-gray-200 {
+  color: #334155 !important;
+}
+
+html.light .text-gray-300 {
+  color: #475569 !important;
+}
+
+html.light .text-gray-400 {
+  color: #64748B !important;
+}
+
+html.light .text-gray-500 {
+  color: #64748B !important;
+}
+
+html.light .border-gray-800,
+html.light .border-gray-800\/80,
+html.light .border-gray-800\/60,
+html.light .border-gray-800\/50,
+html.light .border-gray-700 {
+  border-color: #E2E8F0 !important;
+}
+
+
+
+html.light .divide-gray-800\/60 > :not([hidden]) ~ :not([hidden]),
+html.light .divide-gray-800\/50 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E2E8F0 !important;
+}
+
+/* City Pulse Top Bar: Peach background */
+header,
+.app-header,
+html.light header,
+html.dark header {
+  background-color: #FED7C3 !important;
+  border-color: #F0B296 !important;
+}
+
+/* Navbar: Light black background and crisp white text */
+nav,
+.app-navbar,
+html.light nav,
+html.light .app-navbar,
+html.dark nav,
+html.dark .app-navbar {
+  background-color: #1A1F2C !important;
+  border-color: #2D3748 !important;
+}
+
+html.light nav *,
+html.light .app-navbar *,
+html.light nav span,
+html.light nav button,
+html.light nav a,
+html.light nav svg,
+html.light nav .text-white,
+html.dark nav *,
+html.dark .app-navbar *,
+html.dark nav span,
+html.dark nav button,
+html.dark nav a,
+html.dark nav svg,
+html.dark nav .text-white,
+nav *,
+.app-navbar * {
+  color: #FFFFFF !important;
+}
+
+html.light nav svg,
+html.light .app-navbar svg,
+html.dark nav svg,
+html.dark .app-navbar svg,
+nav svg,
+.app-navbar svg {
+  stroke: #FFFFFF !important;
+}
+
+html.light footer {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+  color: #64748B !important;
+}
+
+/* Select and inputs in Light Mode */
+html.light select option {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+html.light select {
+  color: #0F172A !important;
+}
+
+html.light input {
+  color: #0F172A !important;
+}
+
+html.light input::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* SVG Chart Elements in Light Mode */
+html.light circle[fill="#111827"] {
+  fill: #FFFFFF !important;
+}
+
+html.light line[stroke="#1F2937"] {
+  stroke: #E2E8F0 !important;
+}
+
+html.light text[fill="#6B7280"] {
+  fill: #64748B !important;
+}
+
+/* Scrollbars in Light Mode */
+html.light ::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Table Row Hovers */
+html.light .hover\:bg-gray-800\/40:hover,
+html.light .hover\:bg-gray-800\/30:hover,
+html.light .hover\:bg-gray-900\/30:hover {
+  background-color: #F8FAFC !important;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
