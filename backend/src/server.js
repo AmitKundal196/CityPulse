@@ -21,9 +21,9 @@ app.disable('x-powered-by');
 // Security & Resilience: Production-ready CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+    // Allow requests with no origin (like mobile apps, curl, or same-origin serverless rewrites)
     if (!origin) return callback(null, true);
-    if (env.nodeEnv !== 'production' || env.corsOrigin === '*') {
+    if (env.nodeEnv !== 'production' || env.corsOrigin === '*' || env.isVercel) {
       return callback(null, true);
     }
     const allowed = env.corsOrigin.split(',').map(o => o.trim());
@@ -41,6 +41,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// Serverless DB Connection Middleware: Ensures MongoDB connection is active for each incoming request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.warn(`[DB Middleware] Connection attempt warning: ${err.message}`);
+  }
+  next();
+});
 
 // Routes
 app.use('/api', healthRouter);
@@ -68,19 +78,25 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use(errorHandler);
 
-// Start server & ingestion manager
-const startServer = async () => {
-  await connectDB();
-  app.listen(env.port, () => {
-    console.log(`[Server] Neighborhood Pulse backend listening on port ${env.port}`);
-  });
+// Standalone server & ingestion manager execution:
+// Only call app.listen() and start continuous interval polling during local/container development.
+// On Vercel (where process.env.VERCEL is set), Vercel serverless handles requests via the exported app.
+if (!env.isVercel) {
+  const startServer = async () => {
+    await connectDB();
+    app.listen(env.port, () => {
+      console.log(`[Server] Neighborhood Pulse backend listening on port ${env.port}`);
+    });
 
-  // Start multi-city ingestion service
-  ingestionManager.start().catch(err => {
-    console.error(`[Ingestion Error] Failed to start ingestion manager: ${err.message}`);
-  });
-};
+    // Start multi-city continuous ingestion service
+    ingestionManager.start().catch(err => {
+      console.error(`[Ingestion Error] Failed to start ingestion manager: ${err.message}`);
+    });
+  };
 
-startServer();
+  startServer();
+} else {
+  console.log('[Server] Neighborhood Pulse backend initialized in Vercel serverless environment.');
+}
 
 module.exports = app;

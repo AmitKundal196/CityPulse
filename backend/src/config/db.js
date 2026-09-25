@@ -1,32 +1,50 @@
 const mongoose = require('mongoose');
 const env = require('./env');
 
+let isConnecting = null;
+
 const connectDB = async () => {
+  // If already connected, return immediately
+  if (mongoose.connection.readyState === 1) {
+    return true;
+  }
+
+  // If a connection attempt is in-flight, return the pending promise
+  if (isConnecting) {
+    return isConnecting;
+  }
+
   if (!env.mongoUri) {
     console.warn('[DB Warning] MONGODB_URI is empty. Operating without database connection.');
     return false;
   }
 
-  try {
-    const conn = await mongoose.connect(env.mongoUri, {
-      serverSelectionTimeoutMS: 3000
-    });
-    console.log(`[DB Success] MongoDB Connected: ${conn.connection.host}`);
-
-    // Drop legacy single-field index on feedstatuses if present
+  isConnecting = (async () => {
     try {
-      await mongoose.connection.collection('feedstatuses').dropIndex('source_1');
-      console.log('[DB Info] Dropped legacy feedstatuses source_1 index for multi-city support.');
-    } catch (e) {
-      // Index already dropped or not present
-    }
+      const conn = await mongoose.connect(env.mongoUri, {
+        serverSelectionTimeoutMS: 5000
+      });
+      console.log(`[DB Success] MongoDB Connected: ${conn.connection.host}`);
 
-    return true;
-  } catch (error) {
-    console.warn(`[DB Warning] MongoDB Connection Failed: ${error.message}`);
-    console.warn('[DB Warning] Server running in fallback mode without active database connection.');
-    return false;
-  }
+      // Drop legacy single-field index on feedstatuses if present
+      try {
+        await mongoose.connection.collection('feedstatuses').dropIndex('source_1');
+        console.log('[DB Info] Dropped legacy feedstatuses source_1 index for multi-city support.');
+      } catch (e) {
+        // Index already dropped or not present
+      }
+
+      return true;
+    } catch (error) {
+      console.warn(`[DB Warning] MongoDB Connection Failed: ${error.message}`);
+      console.warn('[DB Warning] Server running in fallback mode without active database connection.');
+      return false;
+    } finally {
+      isConnecting = null;
+    }
+  })();
+
+  return isConnecting;
 };
 
 module.exports = connectDB;

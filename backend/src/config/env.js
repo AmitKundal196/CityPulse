@@ -22,5 +22,7 @@ module.exports = {
   trafficProvider: process.env.TRAFFIC_PROVIDER || 'mappls',
   trafficIntervalMs: process.env.TRAFFIC_INTERVAL_MS ? parseInt(process.env.TRAFFIC_INTERVAL_MS, 10) : 300000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  corsOrigin: process.env.CORS_ORIGIN || '*'
+  corsOrigin: process.env.CORS_ORIGIN || '*',
+  isVercel: Boolean(process.env.VERCEL)
 };
+
